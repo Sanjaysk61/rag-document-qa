@@ -8,29 +8,29 @@ load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 def get_embedding_model():
     return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-def create_vector_store(chunks, persist_directory="chroma_db"):
-
-    print("Creating Embeddings and Storing it in chroma_db")
+def create_vector_store(chunks):
+    """
+    Creates an in-memory ChromaDB vector store.
+    No persist_directory — works both locally and on Streamlit Cloud.
+    """
+    print("Creating Embeddings and Storing in memory...")
 
     embedding_model = get_embedding_model()
 
     vector_store = Chroma.from_documents(
         documents=chunks,
-        embedding=embedding_model,
-        persist_directory=persist_directory
+        embedding=embedding_model
+        # No persist_directory — stays in RAM
     )
 
-    print(f"Done! {len(chunks)} chunks stored in chromaDB at '{persist_directory}'")
+    print(f"Done! {len(chunks)} chunks stored in memory.")
     return vector_store
 
-def load_vector_store(persist_directory="chroma_db"):
 
-    embedding_model = get_embedding_model()
-
-    vector_store = Chroma(
-        persist_directory=persist_directory,
-        embedding_function=embedding_model
-    )
-
-    print(f"Vector store loaded from '{persist_directory}'")
-    return vector_store
+def load_vector_store():
+    """
+    No longer needed — vector store is rebuilt fresh each session.
+    Kept for backward compatibility with local test scripts.
+    """
+    print("Note: On cloud, vector store is rebuilt per session.")
+    return None
