@@ -7,7 +7,11 @@ from src.embedder import load_vector_store
 
 
 load_dotenv(dotenv_path=Path(__file__).parent.parent/".env")
-api_key = st.secrets.get("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
+try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
+except Exception:
+    api_key = os.getenv("GOOGLE_API_KEY")
+
 client = genai.Client(api_key=api_key)
 
 def ask_question(question:str , vector_store, k: int=3):
